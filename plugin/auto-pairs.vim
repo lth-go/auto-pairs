@@ -1,38 +1,22 @@
 let g:AutoPairsLoaded = 1
 
-if !exists('g:AutoPairs')
-  let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
-end
+let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
 
-if !exists('g:AutoPairsParens')
-  let g:AutoPairsParens = {'(':')', '[':']', '{':'}'}
-end
+let g:AutoPairsParens = {'(':')', '[':']', '{':'}'}
 
-if !exists('g:AutoPairsMapBS')
-  let g:AutoPairsMapBS = 1
-end
+let g:AutoPairsMapBS = 1
 
-if !exists('g:AutoPairsMapCR')
-  let g:AutoPairsMapCR = 1
-end
+let g:AutoPairsMapCR = 1
 
-if !exists('g:AutoPairsMapSpace')
-  let g:AutoPairsMapSpace = 1
-end
+let g:AutoPairsMapSpace = 1
 
-if !exists('g:AutoPairsCenterLine')
-  let g:AutoPairsCenterLine = 1
-end
+let g:AutoPairsCenterLine = 1
 
 " When skipping the closed pair, look at the current and
 " next line as well.
-if !exists('g:AutoPairsMultilineClose')
-  let g:AutoPairsMultilineClose = 1
-endif
+let g:AutoPairsMultilineClose = 1
 
-if !exists('g:AutoPairsSmartQuotes')
-  let g:AutoPairsSmartQuotes = 1
-endif
+let g:AutoPairsSmartQuotes = 1
 
 " 7.4.849 support <C-G>U to avoid breaking '.'
 " Issue talk: https://github.com/jiangmiao/auto-pairs/issues/3
@@ -48,9 +32,6 @@ let g:AutoPairsClosedPairs = {}
 
 
 function! AutoPairsInsert(key)
-  if !b:autopairs_enabled
-    return a:key
-  end
 
   let line = getline('.')
   let pos = col('.') - 1
@@ -167,9 +148,6 @@ function! AutoPairsInsert(key)
 endfunction
 
 function! AutoPairsDelete()
-  if !b:autopairs_enabled
-    return "\<BS>"
-  end
 
   let line = getline('.')
   let pos = col('.') - 1
@@ -246,9 +224,7 @@ endfunction
 
 
 function! AutoPairsReturn()
-  if b:autopairs_enabled == 0
-    return ''
-  end
+
   let line = getline('.')
   let pline = getline(line('.')-1)
   let prev_char = pline[strlen(pline)-1]
@@ -292,7 +268,6 @@ endfunction
 
 function! AutoPairsInit()
   let b:autopairs_loaded  = 1
-  let b:autopairs_enabled = 1
   let b:AutoPairsClosedPairs = {}
 
   if !exists('b:AutoPairs')
