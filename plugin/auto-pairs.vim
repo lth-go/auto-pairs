@@ -118,7 +118,7 @@ function! AutoPairsInsert(key)
   end
 
   " TODO:字符前输入不匹配
-  if current_char =~'\v\w'
+  if current_char =~'\v\w' || current_char == "'" || current_char == '"'
     return a:key
   end
 
