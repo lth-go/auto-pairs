@@ -1,31 +1,11 @@
-let g:AutoPairsLoaded = 1
-
 let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
 
 let g:AutoPairsParens = {'(':')', '[':']', '{':'}'}
 
-let g:AutoPairsMapBS = 1
-
-let g:AutoPairsMapCR = 1
-
-let g:AutoPairsMapSpace = 1
-
-let g:AutoPairsCenterLine = 1
-
-" When skipping the closed pair, look at the current and
-" next line as well.
-let g:AutoPairsMultilineClose = 1
-
-let g:AutoPairsSmartQuotes = 1
-
-" 7.4.849 support <C-G>U to avoid breaking '.'
-" Issue talk: https://github.com/jiangmiao/auto-pairs/issues/3
-" Vim note: https://github.com/vim/vim/releases/tag/v7.4.849
 let s:Go = "\<C-G>U"
 
 let s:Left = s:Go."\<LEFT>"
 let s:Right = s:Go."\<RIGHT>"
-
 
 " Will auto generated {']' => '[', ..., '}' => '{'}in initialize.
 let g:AutoPairsClosedPairs = {}
@@ -69,13 +49,9 @@ function! AutoPairsInsert(key)
 
     " Skip the character if closed pair is next character
     if current_char == ''
-      if g:AutoPairsMultilineClose
-        let next_lineno = line('.')+1
-        let next_line = getline(nextnonblank(next_lineno))
-        let next_char = matchstr(next_line, '\s*\zs.')
-      else
-        let next_char = matchstr(line, '\s*\zs.')
-      end
+      let next_lineno = line('.')+1
+      let next_line = getline(nextnonblank(next_lineno))
+      let next_char = matchstr(next_line, '\s*\zs.')
       if next_char == a:key
         return "\<ESC>e^a"
       endif
@@ -98,7 +74,8 @@ function! AutoPairsInsert(key)
     return a:key
   end
 
-  " TODO:字符前输入不匹配
+  " TODO
+  " 字符前输入不匹配
   if current_char =~'\v\w' || current_char == "'" || current_char == '"'
     return a:key
   end
@@ -126,7 +103,7 @@ function! AutoPairsInsert(key)
 
   " Keep quote number is odd.
   " Because quotes should be matched in the same line in most of situation
-  if g:AutoPairsSmartQuotes && open == close
+  if open == close
     " Remove \\ \" \'
     let cleaned_line = substitute(line, '\v(\\.)', '', 'g')
     let n = quotes_num
@@ -231,7 +208,7 @@ function! AutoPairsReturn()
   let cmd = ''
   let cur_char = line[col('.')-1]
   if has_key(b:AutoPairs, prev_char) && b:AutoPairs[prev_char] == cur_char
-    if g:AutoPairsCenterLine && winline() * 3 >= winheight(0) * 2
+    if winline() * 3 >= winheight(0) * 2
       " Recenter before adding new line to avoid replacing line content
       let cmd = "zz"
     end
@@ -284,17 +261,13 @@ function! AutoPairsInit()
   endfor
 
   " Still use <buffer> level mapping for <BS> <SPACE>
-  if g:AutoPairsMapBS
-    " Use <C-R> instead of <expr> for issue #14 sometimes press BS output strange words
-    execute 'inoremap <buffer> <silent> <BS> <C-R>=AutoPairsDelete()<CR>'
-  end
+  " Use <C-R> instead of <expr> for issue #14 sometimes press BS output strange words
+  execute 'inoremap <buffer> <silent> <BS> <C-R>=AutoPairsDelete()<CR>'
 
-  if g:AutoPairsMapSpace
-    " Try to respect abbreviations on a <SPACE>
-    let do_abbrev = ""
-    let do_abbrev = "<C-]>"
-    execute 'inoremap <buffer> <silent> <SPACE> '.do_abbrev.'<C-R>=AutoPairsSpace()<CR>'
-  end
+  " Try to respect abbreviations on a <SPACE>
+  let do_abbrev = ""
+  let do_abbrev = "<C-]>"
+  execute 'inoremap <buffer> <silent> <SPACE> '.do_abbrev.'<C-R>=AutoPairsSpace()<CR>'
 endfunction
 
 
@@ -303,20 +276,18 @@ function! AutoPairsTryInit()
     return
   end
 
-  if g:AutoPairsMapCR
-    let old_cr = '<CR>'
-    let is_expr = 0
+  let old_cr = '<CR>'
+  let is_expr = 0
 
-    if old_cr !~ 'AutoPairsReturn'
-      if is_expr
-        " remap <expr> to `name` to avoid mix expr and non-expr mode
-        execute 'inoremap <buffer> <expr> <script> '. wrapper_name . ' ' . old_cr
-        let old_cr = wrapper_name
-      end
-      " Always silent mapping
-      execute 'inoremap <script> <buffer> <silent> <CR> '.old_cr.'<SID>AutoPairsReturn'
+  if old_cr !~ 'AutoPairsReturn'
+    if is_expr
+      " remap <expr> to `name` to avoid mix expr and non-expr mode
+      execute 'inoremap <buffer> <expr> <script> '. wrapper_name . ' ' . old_cr
+      let old_cr = wrapper_name
     end
-  endif
+    " Always silent mapping
+    execute 'inoremap <script> <buffer> <silent> <CR> '.old_cr.'<SID>AutoPairsReturn'
+  end
   call AutoPairsInit()
 endfunction
 
